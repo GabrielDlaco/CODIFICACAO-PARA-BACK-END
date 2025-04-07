@@ -1,9 +1,13 @@
-// AULA 02
+// AULA 02, 03
 // Instalamos o express usando o comando "npm i express" na pasta fundamentos e agora precisamos importar
 // "npm init -y" para trazer as pastas necessárias do servidor.
 import express from 'express'
 
 const app = express()
+
+//OBRIGATORIO PARA ACEITAR JSON
+app.use(express.json())//Permite a aplicação receber informações em json
+// app.use(express.urlencoded({extended:true})) //Permite a aplicação aceitar imagens
 /** Requisições
  * 1. - Métodos
  * 1.1 - GET -> Busca/ Lista dados
@@ -25,12 +29,15 @@ const app = express()
  * 3.4 - 400 -> Erro do cliente
  * 3.5 - 500 -> Erro do servidor
  */
-//                    req       res
+//             query route / projetos&nome="Carlos"
 app.get('/projetos',(request, response)=>{
+    const {titulo, autor} = request.query //Pega as informações para imprimir elas individualmente, no caso uma propiedade e o seu valor (titulo e autor)
+    console.log(titulo, autor)
     response.status(200).json(['projeto 01', 'projeto 02'])
 })
 
-app.post('/projetos', (request, response)=>{
+app.post('/projetos', (request, response)=>{ //Para pegar as informações de um corpo da aplicação (ex: body do html que contem um formulário) precisamos fazer o seguinte ->
+    console.log(request.body)
     response.status(201).json(['projeto 01', 'projeto 02', 'projeto 03'])
 })
 
@@ -38,7 +45,9 @@ app.put('/projetos', (request, response)=>{
     response.status(200).json(['projeto 88', 'projeto 02', 'projeto 03'])
 })
 
-app.delete('/projetos', (request, response)=>{
+//Receber informação por rota Route params /projetos/12
+app.delete('/projetos/:id', (request, response)=>{ //Passamos a informação por ID. Quando passamos Route params, quer dizer dizer que esssa informação é obrigaória, nesse caso seria obrigatório passar o id para o método delete, e se não passarmos essa informação obrigatória, a aplicação irá retornar um erro, que seria o 404 diferentemente do query route, que recebe informações opcionais
+    const {id} = request.params
     response.status(200).json(['projeto 02', 'projeto 03'])
 })
 
@@ -51,6 +60,7 @@ app.listen(3333, ()=>{
     // 1.5 - No package.json usamos ""dev": "nodemon ./server.js"" na parte de script, pois o nodemon estava dando erro
     // 1.6 - Ao invés de usarmos "node server.js" no terminal iremos usar "npm run dev" após isntalar o nodemon e mudar o package.json
     // 1.7 - Os endpoints devem estar no plural -> projetos, pessoas, roupas
+    // 1.8 -
 
 
 })
