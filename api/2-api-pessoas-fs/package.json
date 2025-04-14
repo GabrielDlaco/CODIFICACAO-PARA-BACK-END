@@ -1,0 +1,22 @@
+{
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  },
+  "name": "2-api-pessoas-fs",
+  "version": "1.0.0",
+  "description": "- [] O usuário deve poder se cadastrar na aplicação\r - [] O usuário deve poder fazer login na aplicação\r - [] A aplicação deve listar todos os usuários\r - [] O usuário deve poder atualizar o seu cadastro\r - [] O usuário deve poder exculir seu cadastro\r - [] O usuário deve poder selecionar um único cadastro",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
