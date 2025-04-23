@@ -76,9 +76,105 @@ app.post("/pessoas", (request, response)=>{
 
     })
 });
-app.get("/pessoas", (request, response)=>{})
-app.put("/pessoas", (request, response)=>{})
-app.delete("/pessoas", (request, response)=>{})
+app.get("/pessoas/:id", (request, response)=>{
+    const {id} = request.params
+
+    fs.readFile(url_database, "utf-8", (err, data)=>{
+        if(err){
+            console.log('error: ',err)
+            response.status(500).json({mensagem: "Erro ao ler o arquivo"})
+            return
+        }
+
+        const pessoas = JSON.parse(data)
+        console.log('Array de pessoas =>', pessoas)
+        const encontrarPessoa = pessoas.find((pessoa)=>pessoa.id === id)
+        console.log('Pessoa encontrada => ',encontrarPessoa)
+        if(!encontrarPessoa){
+            response.status(404).json({mensagem: "Pessoa não encontrada"})
+            return
+        }
+        response.status(200).json({mensagem:"Pessoa encontrada", encontrarPessoa})
+    })
+})
+
+app.put("/pessoas/:id", (request, response)=>{
+    //1º Verificar se pessoa existe
+    //2º Atualizar as informações das pessoas
+    //3º Atualizar o arquivo .json com as novas infos
+    const {id} = request.params
+    const {nome, cargo} = request.body
+
+    if(!nome || typeof nome !== 'string' || nome.trim() === ''){
+        response.status(400).json({mensagem:"O campo 'nome' é obrigatório e deve ser um texto"})
+        return
+    }
+
+    if(!cargo || typeof cargo !== 'string' || cargo.trim() === ''){
+        response
+        .status(400)
+        .json({mensagem:"O campo 'cargo' é obrigatório e deve ser um texto"})
+        return
+    }
+
+    fs.readFile(url_database, 'utf-8', (err, data)=>{
+        if(err){
+            console.log(err)
+            response.status(500).json({mensgem: "Erro ao ler arquivo"})
+            return
+        }
+
+        const pessoas = JSON.parse(data)
+        const indexPessoa = pessoas.findIndex((pessoa) => pessoa.id === id)
+        //Não encontra = undefined || Não encontra = -1
+        if(indexPessoa === -1){
+            response.status(404).json({mensagem: "Pessoa não encontrada"})
+            return
+        }
+
+        pessoas[indexPessoa] = {...pessoas[indexPessoa], nome, cargo} //Linha de código que vai atualizar informações de usuários
+
+        fs.writeFile(url_database, JSON.stringify(pessoas, null, 2), (err)=>{
+            if(err){
+                console.log(err)
+                response.status(500).json({mensgem: "Erro ao atualizar"})
+                return
+            }
+            response.status(200).json({mensagem: "Pessoa atualizada", pessoa: pessoas[indexPessoa]})
+        })
+
+    })
+})
+
+app.delete("/pessoas/:id", (request, response)=>{
+    const {id} = request.params
+    fs.readFile(url_database, "utf-8", (err, data)=>{
+        if(err){
+            console.log(err)
+            response.status(500).json({mensagem: "Erro ao ler arquivo"})
+            return
+        }
+        const pessoas = JSON.parse(data)
+        const indexPessoa = pessoas.findIndex((pessoa)=> pessoa.id === id)
+        if(indexPessoa === -1){
+            response.status(404).json({mensagem: "Pessoa não encontrada"})
+            return
+        }
+
+        const pessoaRemovida = pessoas.splice(indexPessoa, 1)[0]
+        console.log(pessoaRemovida)
+
+        fs.writeFile(url_database, JSON.stringify(pessoas, null, 2), (err)=>{
+            if(err){
+                console.log(err)
+                response.status(500).json({mensagem: "Erro ao salvar arquivo"})
+                return
+            }
+            response.status(200).json({mensagem: "Pessoa Removida", pessoa: pessoaRemovida})
+        })
+
+    })
+})
 
 app.listen(PORT, ()=>{
     console.log(`Servidor iniciado em  http://localhost:3333`)
