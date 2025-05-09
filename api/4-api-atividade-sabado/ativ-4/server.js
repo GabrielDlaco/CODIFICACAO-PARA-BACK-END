@@ -212,7 +212,6 @@ app.delete("/participante/:id", (request, response)=>{
             response.status(200).json({mensagem: "Pessoa Removida", pessoa: participantedeletado})
         })
 
-        //to ficando louco
     })
 })
 
@@ -243,8 +242,6 @@ app.get('/participantes/count/over18', (request, response) => {
         response.status(200).json({ totalParticipantes: over18.length });
     });
 });
-
-// nao consigo fazer.
 
 app.get('/participantes/city/most', (request, response) => {
     fs.readFile(url_database, 'utf-8', (err, data) => {
