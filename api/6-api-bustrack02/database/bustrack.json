@@ -1,4 +1,36 @@
 {
-    "motoristas": [],
-    "onibus": []
+  "motoristas": [
+    {
+      "id_motorista": "1746875640480",
+      "nome": "Gabriel Laço",
+      "data_nascimento": "26/10/2000",
+      "carteira_habilitacao": "ABC123",
+      "onibus_id": 0
+    },
+    {
+      "id_motorista": "1746881593353",
+      "nome": "Laço",
+      "data_nascimento": "10/10/2005",
+      "carteira_habilitacao": "BFG654",
+      "onibus_id": 0
+    }
+  ],
+  "onibus": [
+    {
+      "id_onibus": "1746877051668",
+      "placa": "ads213",
+      "modelo": "mercedes bus",
+      "ano_fabricacao": "2015",
+      "capacidade": "50",
+      "motorista_id": 0
+    },
+    {
+      "id_onibus": "1746881571608",
+      "placa": "bbc546",
+      "modelo": "Mercedes-Benz OF-1721",
+      "ano_fabricacao": "2015",
+      "capacidade": "55",
+      "motorista_id": 0
+    }
+  ]
 }
