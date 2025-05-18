@@ -13,6 +13,8 @@ app.use(cors({
 }))
 app.use(express.json())
 
+// 🧠 Consultas e Filtragens
+
 app.get("/instrutores", async (req, res) => {
     try {
         const data = await fs.readFile(database_url, 'utf-8')
@@ -125,6 +127,8 @@ app.get("/usuarios/:id/comentarios", async (req, res) => {
         res.status(500).json({mensagem: "Internal server error"})
     }
 })
+
+// 📊 Cálculos e Estatísticas
 
 app.get("/cursos/:id/media-progresso", async (req, res) => {
     const { id } = req.params
@@ -248,6 +252,8 @@ app.get("/certificados/por-curso", async (req, res) => {
     }
 })
 
+// 🧩 Transformações e Agrupamentos
+
 app.get("/usuarios/agrupados-por-tipo", async (req, res) => {
     try {
         const data = await fs.readFile(database_url, 'utf-8')
@@ -302,17 +308,76 @@ app.get("/usuarios/com-multiplos-certificados", async (req, res) => {
         const alunos = db.usuarios.filter((usuario) => usuario.tipo === "estudante")
         const certificados = db.certificados
 
-        const maisDeUmCertificado = certificados.map((certificado) => certificado.curso_id > 1)
+        const idUsuariosCertificados = certificados.map((certificado) => certificado.usuario_id)
 
-        if(!maisDeUmCertificado){
-            res.status(404).json({mensagem: "Não há nenhum aluno com mais de um certificado"})
+        res.status(200).json()
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({mensagem: "Internal server error"})
+    }
+})
+
+// 🛠️ Simulações e Atualizações
+
+app.post("/cursos/:id/comentarios", async (req, res) => {
+    const { id } = req.params
+    const idInt = Number(id)
+    const {usuario_id, comentario, nota} = req.body
+
+    if(!usuario_id){
+        res.status(400).json({mensagem: "Campo do id do usuário é obrigatório"})
+        return
+    }
+    if(!comentario){
+        res.status(400).json({mensagem: "Campo de comentario é obrigatório"})
+        return
+    }
+    if(!nota){
+        res.status(400).json({mensagem: "Campo de nota é obrigatório"})
+        return
+    }
+
+    const novoComentario = {
+        usuario_id,
+        comentario,
+        nota
+    }
+
+    try {
+        const data = await fs.readFile(database_url, 'utf-8')
+        const db = await JSON.parse(data)
+        const curso = db.cursos.find((curso) => curso.id === idInt)
+
+        curso.comentarios.push(novoComentario)
+
+        await fs.writeFile(database_url, JSON.stringify(db, null, 2))
+        res.status(200).json({mensagem: "Comentário adicionado", curso})
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({mensagem: "Internal server error"})
+    }
+})
+
+app.delete("/cursos/sem-comentarios", async (req, res) => {
+    try {
+        const data = await fs.readFile(database_url, 'utf-8')
+        const db = await JSON.parse(data)
+        const cursos = db.cursos
+
+        const cursosSemComentarios = cursos.filter((curso) => curso.comentarios.length === 0)
+        if(!cursosSemComentarios){
+            res.status(404).json({mensagem: "Não há nenhum curso sem comentários"})
             return
         }
+        const idCursosSemComentarios = cursosSemComentarios.map((curso) => curso.id)
+        const indexCurso = cursos.findIndex((curso) => idCursosSemComentarios.find((id) => curso.id === id))
 
-        const idUsuariosCertificados = certificados.filter((usuario) => usuario.user_id)
+        const cursosDeletados = cursos.splice(indexCurso, 2)[0]
 
-        res.status(200).json(idUsuariosCertificados)
+        await fs.writeFile(database_url, JSON.stringify(db, null, 2))
 
+        res.status(200).json({mensagem: "Cursos sem comentários deletados! "})
     } catch (error) {
         console.log(error)
         res.status(500).json({mensagem: "Internal server error"})
